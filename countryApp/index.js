@@ -15,26 +15,31 @@ const div = document.createElement("div");
 body.appendChild(div);
 
 const getCountryData = async () => {
-  const keyboardValue = input.value;
-  if (!keyboardValue) {
+  const inputValue = input.value;
+  if (!inputValue) {
     countryPopulation.innerHTML = `Please enter country to search for information`;
     div.appendChild(countryPopulation);
   } else {
-    const url = `https://restcountries.eu/rest/v2/name/${keyboardValue}`;
+    const url = `https://restcountries.eu/rest/v2/name/${inputValue}`;
     const res = await fetch(url);
     const data = await res.json();
-    countryFlag.src = data[0].flag;
-    countryPopulation.innerHTML = `Population : ${data[0].population}`;
-    countryCapital.innerHTML = `Capital : ${data[0].capital}`;
-    countryName.innerHTML = data[0].name;
-    citizenName.innerHTML = `A citizen of ${data[0].name} is ${data[0].demonym}`;
-    Countrycurrency.innerHTML = `Currency : ${data[0].currencies[0].name}. Currency symbol : ${data[0].currencies[0].symbol}`;
-    div.appendChild(countryName);
-    div.appendChild(countryCapital);
-    div.appendChild(countryPopulation);
-    div.appendChild(citizenName);
-    div.appendChild(Countrycurrency);
-    div.appendChild(countryFlag);
+    data.map(
+      ({ name, flag, capital, population, demonym, currencies } = data) => {
+        const { currencyName = name, symbol } = currencies[0];
+        countryFlag.src = flag;
+        countryPopulation.innerHTML = `Population : ${population}`;
+        countryCapital.innerHTML = `Capital : ${capital}`;
+        countryName.innerHTML = name;
+        citizenName.innerHTML = `A citizen of ${name} is ${demonym}`;
+        Countrycurrency.innerHTML = `Currency : ${currencyName}. Currency symbol : ${symbol}`;
+        div.appendChild(countryFlag);
+        div.appendChild(countryName);
+        div.appendChild(countryCapital);
+        div.appendChild(countryPopulation);
+        div.appendChild(citizenName);
+        div.appendChild(Countrycurrency);
+      }
+    );
   }
 };
 searchButton.addEventListener("click", getCountryData);
